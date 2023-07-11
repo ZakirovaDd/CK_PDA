@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+
+df_salary = pd.read_excel("/content/Employee_Salary_Dataset.ods", engine="odf")
+print(df_salary.head(5))
+
+df_salary.columns = [columns.lower().strip() for columns in df_salary.columns]
+print(df_salary.head(5))
+
+def find_outliers(input_series: pd.Series) -> pd.Series:
+    iqr = input_series.quantile(0.75) - input_series.quantile(0.25)
+    median = input_series.median()
+    upper_boundary = median + 1.5 * iqr
+    lower_boundary = median - 1.5 * iqr
+    return input_series.between(lower_boundary, upper_boundary)
+
+find_outliers(df_salary['salary'])
+
+df_without_outliers = df_salary[find_outliers(df_salary['salary'])]
+print(df_without_outliers.head(3))
